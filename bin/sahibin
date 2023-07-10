@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+set -e
+
+VERSION="1.0.1"
+SAHIBIN_BASE_URL="${SAHIBIN_BASE_URL:-http://localhost:5000}"
+USAGE="Usage: sahibin [options] [content ...]
+Sahibin v${VERSION}, an online text sharer.
+@bigdata
+
+Options:
+  -k, --key           optional key when creating new paste (default: unique uuid4)
+  -h, --help          print help and exit
+  -v, --version       print version and exit
+
+Examples:
+  Create new paste by providing content directly.
+  $ sahibin 'a simple content'
+
+  Create new paste by providing content via stdin.
+  $ echo 'content from stdin' | sahibin
+
+  Create new paste by providing content via stdin.
+  $ sahibin -k my-key 'new content'
+
+  Get paste content by providing full url.
+  $ sahibin ${SAHIBIN_BASE_URL}/share?key=my-key
+"
+
+function api_get() {
+  local key
+  key="$1"
+
+  response=$(
+    curl "${SAHIBIN_BASE_URL}/api/raw?key=${key}" \
+      --silent \
+      --disable \
+      --insecure \
+      --compressed
+  )
+  printf "%s" "${response}"
+}
+
+function api_create() {
+  local key
+  local data
+  key="$1"
+  data="$2"
+
+  if [[ -n "${key}" ]]; then
+    payload=$(jq -n --arg data "${data}" --arg key "${key}" '{ "data": $data, "key": $key }')
+  else
+    payload=$(jq -n --arg data "${data}" '{ "data": $data }')
+  fi
+
+  response=$(
+    curl "${SAHIBIN_BASE_URL}/api/create" \
+      -H 'Content-Type: application/json' \
+      --data-raw "${payload}" \
+      --silent \
+      --disable \
+      --insecure \
+      --compressed
+  )
+
+  result=$(echo "${response}" | jq -r '.key // ""')
+  if [[ -n "${result}" ]]; then
+    echo "${SAHIBIN_BASE_URL}/share?key=${result}"
+    return
+  fi
+
+  result=$(echo "${response}" | jq -r '.detail // ""')
+  if [[ -n "${result}" ]]; then
+    echo "${result}"
+    return
+  fi
+
+  echo "${response}"
+}
+
+function main() {
+  key=""
+  data=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -h | --help)
+      echo "${USAGE}"
+      exit 0
+      ;;
+    -v | --version)
+      echo "${VERSION}"
+      exit 0
+      ;;
+    -k | --key)
+      if [[ -n "$2" ]]; then
+        key="$2"
+        shift
+        shift
+      else
+        echo "Error: Argument for -k/--key is missing."
+        exit 1
+      fi
+      ;;
+    *)
+      data="${data}$1"
+      shift
+      ;;
+    esac
+  done
+
+  if [[ ! -t 0 ]]; then
+    data=$(cat)
+  fi
+
+  if [[ -z "${data}" ]]; then
+    echo "${USAGE}"
+    exit 1
+  fi
+
+  if [[ "${data}" == ${SAHIBIN_BASE_URL}/share?key=* ]]; then
+    IFS="=" read -ra parts <<<"${data}"
+    api_get "${parts[-1]}"
+  else
+    api_create "${key}" "${data}"
+  fi
+}
+
+main "${@}"

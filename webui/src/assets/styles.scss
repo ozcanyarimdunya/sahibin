@@ -1,0 +1,44 @@
+@import 'bootstrap/scss/bootstrap.scss';
+
+:root {
+  --sahibin-light-color: #fee800;
+  --sahibin-dark-color: #3f475f;
+}
+
+.container-fluid {
+  padding-right: calc(var(--bs-gutter-x) * 1.5);
+  padding-left: calc(var(--bs-gutter-x) * 1.5);
+}
+
+.text-sahibin-dark {
+  color: var(--sahibin-dark-color);
+}
+
+.text-sahibin-light {
+  color: var(--sahibin-light-color);
+}
+
+.bg-sahibin-dark {
+  background: var(--sahibin-dark-color);
+}
+
+.bg-sahibin-light {
+  background: var(--sahibin-light-color);
+}
+
+.sahibin-logo {
+  background: var(--sahibin-light-color);
+  color: #000000;
+  font-size: 1.25rem;
+}
+
+.sahibin-logo:hover {
+  color: #000000;
+  filter: brightness(95%);
+  cursor: pointer;
+}
+
+.btn-sahibin {
+  padding-top: .35rem;
+  padding-bottom: .35rem;
+}

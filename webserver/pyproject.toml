@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "sahibin"
+version = "1.0.1"
+description = "Sahibin is an online platform that allows users to store and share plain text snippets or code snippets."
+authors = ["Ozcan Yarimdunya <ozcanyd@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.97.0"
+uvicorn = "^0.22.0"
+pymongo = "^4.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

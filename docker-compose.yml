@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  database:
+    image: mongo:6.0
+    volumes:
+      - /opt/data/sahibin:/data/db
+    environment:
+      TZ: "Europe/Istanbul"
+
+  webserver:
+    build:
+      context: .
+      dockerfile: ./docker/webserver.Dockerfile
+    depends_on:
+      - database
+    environment:
+      TZ: "Europe/Istanbul"
+      DATABASE_URL: mongodb://database:27017/
+
+  webui:
+    build:
+      context: .
+      dockerfile: ./docker/webui.Dockerfile
+    depends_on:
+      - webserver
+    ports:
+      - "5000:80"
+    environment:
+      TZ: "Europe/Istanbul"
