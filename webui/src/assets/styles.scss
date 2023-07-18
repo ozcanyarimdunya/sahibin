@@ -26,19 +26,39 @@
   background: var(--sahibin-light-color);
 }
 
+.border-sahibin-light {
+  --bs-border-opacity: 1;
+  border-color: var(--sahibin-light-color) !important;
+}
+
+.border-sahibin-dark {
+  --bs-border-opacity: 1;
+  border-color: var(--sahibin-dark-color) !important;
+}
+
 .sahibin-logo {
-  background: var(--sahibin-light-color);
-  color: #000000;
-  font-size: 1.25rem;
+  color: var(--sahibin-light-color);
 }
 
 .sahibin-logo:hover {
-  color: #000000;
-  filter: brightness(95%);
+  color: var(--sahibin-light-color);
+  filter: brightness(90%);
   cursor: pointer;
 }
 
-.btn-sahibin {
-  padding-top: .35rem;
-  padding-bottom: .35rem;
+.btn-outline-sahibin {
+  --bs-btn-color: var(--sahibin-light-color);
+  --bs-btn-border-color: var(--sahibin-light-color);
+  --bs-btn-hover-color: #000;
+  --bs-btn-hover-bg: var(--sahibin-light-color);
+  --bs-btn-hover-border-color: var(--sahibin-light-color);
+  --bs-btn-focus-shadow-rgb: 255, 193, 7;
+  --bs-btn-active-color: #000;
+  --bs-btn-active-bg: var(--sahibin-light-color);
+  --bs-btn-active-border-color: var(--sahibin-light-color);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: var(--sahibin-light-color);
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: var(--sahibin-light-color);
+  --bs-gradient: none;
 }

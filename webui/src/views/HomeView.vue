@@ -1,14 +1,24 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-lg">
     <div class="row">
-      <div class="col-12 py-3 d-flex justify-content-end flex-column flex-sm-row">
-        <loading-button
-            class="btn btn-sm btn-primary rounded-1 px-5"
-            :loading="loading"
-            :class="{'disabled': !editor || loading}"
-            @click="onSave">
-          Save
-        </loading-button>
+      <div class="col-12">
+        <div class="py-3 d-flex justify-content-end flex-column flex-sm-row gap-3">
+          <div class="d-flex column-gap-3">
+            <select class="form-select form-select-sm" v-model="expire" :disabled="loading">
+              <option selected value="1">Expire in one day</option>
+              <option value="7">Expire in one week</option>
+              <option value="30">Expire in one month</option>
+              <option value="-1">Never expire</option>
+            </select>
+            <loading-button
+                class="btn btn-sm btn-primary rounded-1 px-3 text-nowrap"
+                :loading="loading"
+                :class="{'disabled': !editor || loading}"
+                @click="onSave">
+              Save Snippet
+            </loading-button>
+          </div>
+        </div>
       </div>
       <div class="col-12">
         <v-ace-editor
@@ -31,22 +41,20 @@ import pasteService from "@/service";
 const router = useRouter()
 const loading = ref(false);
 const editor = ref('')
-
+const expire = ref(1)
 
 const onSave = () => {
   loading.value = true
   pasteService
-      .create(editor.value)
-      .then(data => router.push({name: 'share', query: {key: data.key}}))
+      .create({data: editor.value, expire: expire.value})
+      .then(data => router.push({name: 'share', params: {key: data.key}}))
       .catch(err => console.warn(err))
       .finally(() => loading.value = false)
 }
-
 </script>
-
 
 <style scoped>
 .ace-editor {
-  height: calc(100vh - 10rem);
+  height: calc(100vh - 9rem);
 }
 </style>

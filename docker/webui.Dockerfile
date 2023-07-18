@@ -23,6 +23,8 @@ COPY --from=builder /webui/dist .
 RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx && \
     chmod -R 770 /var/cache/nginx /var/run /var/log/nginx
 
+COPY ./bin/sahibin ./sahibin
+
 COPY ./docker/sahibin.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

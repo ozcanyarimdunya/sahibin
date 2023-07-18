@@ -16,17 +16,17 @@ const router = createRouter({
             component: () => import('@/views/AboutView.vue')
         },
         {
-            path: '/sahibin-cli',
-            name: 'sahibin-cli',
+            path: '/cli',
+            name: 'cli',
             component: () => import('@/views/CLIView.vue')
         },
         {
-            path: '/sahibin-api',
-            name: 'sahibin-api',
+            path: '/docs',
+            name: 'docs',
             component: () => import('@/views/APIView.vue')
         },
         {
-            path: '/share',
+            path: '/share/:key',
             name: 'share',
             component: () => import('@/views/ShareView.vue')
         },

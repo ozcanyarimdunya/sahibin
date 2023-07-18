@@ -1,7 +1,7 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-lg">
     <div class="row">
-      <div class="col-12 col-lg-9 mx-auto py-4">
+      <div class="col-12 mx-auto py-4">
         <header class="d-flex align-items-center pb-3 mb-5 border-bottom text-center flex-column fw-bold">
           <h1>Sahibin</h1>
           <p class="text-secondary fw-light">
@@ -61,11 +61,9 @@
               <p>
                 To further enhance accessibility and convenience, Sahibin offers a command-line interface (CLI) that
                 enables users to interact with the platform directly from their terminal. By leveraging the CLI, users
-                can effortlessly create snippets by providing content through standard input (stdin). Additionally, the
-                CLI supports retrieving snippets by providing a full URL as a command-line argument, allowing users to
-                access snippet
+                can effortlessly create snippets by providing content through standard input (stdin).
               </p>
-              <router-link :to="{name: 'sahibin-cli'}" class="btn btn-primary">Install Sahibin CLI</router-link>
+              <router-link :to="{name: 'cli'}" class="btn btn-primary">Install Sahibin CLI</router-link>
             </div>
           </div>
           <hr class="col-5 mb-5">
@@ -77,7 +75,7 @@
                 Sahibin provides a simple yet powerful API that allows developers to integrate snippet creation and
                 retrieval functionality into their applications.
               </p>
-              <router-link :to="{name: 'sahibin-api'}" class="btn btn-outline-primary">API Documentation</router-link>
+              <router-link :to="{name: 'docs'}" class="btn btn-outline-primary">API Documentation</router-link>
             </div>
           </div>
           <hr class="col-5 mb-5">

@@ -1,7 +1,7 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-lg">
     <div class="row">
-      <div class="col-12 col-lg-9 mx-auto py-4">
+      <div class="col-12 mx-auto py-4">
         <header class="d-flex align-items-center pb-3 mb-5 border-bottom text-center flex-column fw-bold">
           <h1>Sahibin API</h1>
           <p class="text-secondary fw-light">
@@ -39,13 +39,48 @@ import {setupBootstrap} from "@/plugins";
 
 const endpoints = [
   {
-    path: '/api/get',
+    path: '/api',
+    method: 'POST',
+    summary: 'Create new paste',
+    parameters: [
+      {
+        name: 'data',
+        in: 'body',
+        required: true,
+        description: 'The paste content',
+        default: null,
+        type: 'string',
+      },
+      {
+        name: 'expire',
+        in: 'body',
+        required: false,
+        description: 'The paste expire duration in days',
+        default: '1 for expire in one day',
+        type: 'integer',
+      },
+    ],
+    responses: [
+      {
+        code: '201',
+        description: 'Return a successful result when paste created',
+        example: '{ "key": "f09781ec-0e39-4c52-80fc-1fd9f0e9f935" }'
+      },
+      {
+        code: '422',
+        description: 'Return validation error when paste payload did\'nt meet the requirement',
+        example: '{ "detail": [ { "loc": [ "string", 0 ], "msg": "string", "type": "string" } ] }'
+      },
+    ]
+  },
+  {
+    path: '/api/{key}',
     method: 'GET',
     summary: 'Get Paste content by key',
     parameters: [
       {
         name: 'key',
-        in: 'query',
+        in: 'path',
         required: true,
         description: 'The paste key to retrieve',
         default: null,
@@ -62,68 +97,6 @@ const endpoints = [
         code: '404',
         description: 'Return an unsuccessful result when paste with key does not exists',
         example: '{ "detail": "Paste not found" }'
-      },
-    ]
-  },
-  {
-    path: '/api/raw',
-    method: 'GET',
-    summary: 'Get Paste content by key as raw',
-    parameters: [
-      {
-        name: 'key',
-        in: 'query',
-        required: true,
-        description: 'The paste key to retrieve',
-        default: null,
-        type: 'string',
-      }
-    ],
-    responses: [
-      {
-        code: '200',
-        description: 'Return a successful result when paste with key exists',
-        example: 'Paste content'
-      },
-      {
-        code: '404',
-        description: 'Return an unsuccessful result when paste with key does not exists',
-        example: 'Paste not found'
-      },
-    ]
-  },
-  {
-    path: '/api/create',
-    method: 'POST',
-    summary: 'Create new paste',
-    parameters: [
-      {
-        name: 'key',
-        in: 'body',
-        required: false,
-        description: 'The paste key',
-        default: 'An unique uuid',
-        type: 'string',
-      },
-      {
-        name: 'data',
-        in: 'body',
-        required: true,
-        description: 'The paste content',
-        default: null,
-        type: 'string',
-      }
-    ],
-    responses: [
-      {
-        code: '201',
-        description: 'Return a successful result when paste created',
-        example: '{ "key": "f09781ec-0e39-4c52-80fc-1fd9f0e9f935" }'
-      },
-      {
-        code: '409',
-        description: 'Return conflict result when paste with key already exists',
-        example: '{ "detail": "A paste with key {key} already exists" }'
       },
     ]
   },

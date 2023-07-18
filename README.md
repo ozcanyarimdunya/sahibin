@@ -11,33 +11,27 @@ shared with others for viewing or collaboration.
 **Installation**
 
 ```shell
-$ cd webserver
-$ poetry install
+$ make install-webserver
 ```
 
-**Run**
+**Running**
 
 ```shell
-$ cd webserver
-$ uvicorn main:app --reload
+$ make run-webserver
 ```
-
-> You may need to set up cors.
 
 ### Webui (frontend)
 
 **Installation**
 
 ```shell
-$ cd webui/
-$ yarn install
+$ make install-webui
 ```
 
-**Run**
+**Running**
 
 ```shell
-$ cd webserver
-$ yarn run dev
+$ make run-webui
 ```
 
 ## Deployment
@@ -45,23 +39,32 @@ $ yarn run dev
 ### Docker
 
 ```shell
-docker compose up -d --build
+make run-docker
 ```
 
-Check the [http://localhost:5000/](http://localhost:5000/).
+Check this link [http://localhost:8000/](http://localhost:8000/).
 
-## CLI Installation
+## CLI 
 
-Delete previous record if exists
+**Installation**
 
 ```shell
-docker exec sahibin-database-1 mongosh --quiet --eval "db.paste.deleteOne({key: 'stable'})" sahibin
+$ sudo curl -k http://0.0.0.0:8000/sahibin -o /usr/local/bin/sahibin
+$ sudo chmod +x /usr/local/bin/sahibin
 ```
 
-Create new record
+**Create a new paste by providing content directly.**
 
 ```shell
-cat bin/sahibin | ./bin/sahibin -k stable
+$ sahibin "Hello, my name is $(whoami)!"
+http://0.0.0.0:8000/share/abc123
+```
+
+**Create a new paste by providing content via stdin.**
+
+```shell
+$ cat /tmp/test.txt | sahibin
+http://0.0.0.0:8000/share/xyz321
 ```
 
 ## Screenshots
@@ -71,3 +74,5 @@ cat bin/sahibin | ./bin/sahibin -k stable
 ![img2.png](./assets/img2.png)
 
 ![img3.png](./assets/img3.png)
+
+> @ozcanyarimdunya

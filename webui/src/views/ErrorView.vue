@@ -1,7 +1,7 @@
 <template>
-  <div class="container-fluid mt-5">
+  <div class="container-lg mt-5">
     <div class="row">
-      <div class="col-12 col-lg-8 text-center mx-auto">
+      <div class="col-12 text-center mx-auto">
         <h2 class="error-heading mb-5">Oops!</h2>
         <div class="border p-5">
           <code>{{ errorMessage }}</code>

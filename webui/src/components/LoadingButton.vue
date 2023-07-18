@@ -1,6 +1,7 @@
 <template>
   <button :class="{'disabled': loading}">
-    <span class="spinner-border-sm spinner-border text-white"
+    <span class="spinner-border-sm spinner-border"
+          :class="spinnerClass"
           role="status"
           v-if="loading"/>
     <slot/>
@@ -12,6 +13,10 @@ defineProps({
     type: Boolean,
     default: false
   },
+  spinnerClass: {
+    type: String,
+    default: 'text-white'
+  }
 })
 </script>
 

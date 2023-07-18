@@ -1,127 +1,78 @@
-#!/usr/bin/env bash
-set -e
+#!/usr/bin/env python3
+"""
+Sahibin, an online text sharer.
+@ozcanyarimdunya
+"""
+import argparse
+import json
+import os
+import ssl
+import sys
+from urllib.error import HTTPError
+from urllib.error import URLError
+from urllib.request import Request
+from urllib.request import urlopen
 
-VERSION="1.0.1"
-SAHIBIN_BASE_URL="${SAHIBIN_BASE_URL:-http://localhost:5000}"
-USAGE="Usage: sahibin [options] [content ...]
-Sahibin v${VERSION}, an online text sharer.
-@bigdata
+__author__ = "@ozcanyarimdunya"
+__version__ = "1.0.8"
+SAHIBIN_URL = os.getenv("SAHIBIN_URL", "http://0.0.0.0:8000")
 
-Options:
-  -k, --key           optional key when creating new paste (default: unique uuid4)
-  -h, --help          print help and exit
-  -v, --version       print version and exit
 
-Examples:
-  Create new paste by providing content directly.
-  $ sahibin 'a simple content'
+def api(content, expire=1):
+    data = {"data": content, "expire": expire}
+    payload = json.dumps(data).encode("utf-8")
+    headers = {
+        "Content-Type": "application/json",
+        "Content-Length": len(payload)
+    }
+    request = Request(
+        url=SAHIBIN_URL + "/api",
+        data=payload,
+        headers=headers,
+        method="POST",
+    )
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    try:
+        with urlopen(request, context=context) as response:
+            body = response.read().decode("utf-8")
+            key = json.loads(body).get("key")
+            return 0, SAHIBIN_URL + "/share/" + key
+    except HTTPError as ex:
+        return 1, ex
+    except URLError as ex:
+        return 1, ex
+    except Exception as ex:
+        return 1, ex
 
-  Create new paste by providing content via stdin.
-  $ echo 'content from stdin' | sahibin
 
-  Create new paste by providing content via stdin.
-  $ sahibin -k my-key 'new content'
+def main():
+    parser = argparse.ArgumentParser(description="Sahibin, an online text sharer.", epilog=__author__)
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=__version__,
+    )
+    parser.add_argument(
+        "-e",
+        dest="expire",
+        metavar="<value>",
+        help="The paste expire duration in days (default: %(default)s for 1 day, 0 for never expire).",
+        type=int,
+        default=1,
+    )
+    if sys.stdin.isatty():
+        parser.add_argument("content", help="The paste content", type=str)
+        args = vars(parser.parse_args())
+    else:
+        args = vars(parser.parse_args())
+        args.update(content=sys.stdin.read().strip())
+    code, result = api(**args)
+    print(result)
+    return code
 
-  Get paste content by providing full url.
-  $ sahibin ${SAHIBIN_BASE_URL}/share?key=my-key
-"
 
-function api_get() {
-  local key
-  key="$1"
-
-  response=$(
-    curl "${SAHIBIN_BASE_URL}/api/raw?key=${key}" \
-      --silent \
-      --disable \
-      --insecure \
-      --compressed
-  )
-  printf "%s" "${response}"
-}
-
-function api_create() {
-  local key
-  local data
-  key="$1"
-  data="$2"
-
-  if [[ -n "${key}" ]]; then
-    payload=$(jq -n --arg data "${data}" --arg key "${key}" '{ "data": $data, "key": $key }')
-  else
-    payload=$(jq -n --arg data "${data}" '{ "data": $data }')
-  fi
-
-  response=$(
-    curl "${SAHIBIN_BASE_URL}/api/create" \
-      -H 'Content-Type: application/json' \
-      --data-raw "${payload}" \
-      --silent \
-      --disable \
-      --insecure \
-      --compressed
-  )
-
-  result=$(echo "${response}" | jq -r '.key // ""')
-  if [[ -n "${result}" ]]; then
-    echo "${SAHIBIN_BASE_URL}/share?key=${result}"
-    return
-  fi
-
-  result=$(echo "${response}" | jq -r '.detail // ""')
-  if [[ -n "${result}" ]]; then
-    echo "${result}"
-    return
-  fi
-
-  echo "${response}"
-}
-
-function main() {
-  key=""
-  data=""
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-    -h | --help)
-      echo "${USAGE}"
-      exit 0
-      ;;
-    -v | --version)
-      echo "${VERSION}"
-      exit 0
-      ;;
-    -k | --key)
-      if [[ -n "$2" ]]; then
-        key="$2"
-        shift
-        shift
-      else
-        echo "Error: Argument for -k/--key is missing."
-        exit 1
-      fi
-      ;;
-    *)
-      data="${data}$1"
-      shift
-      ;;
-    esac
-  done
-
-  if [[ ! -t 0 ]]; then
-    data=$(cat)
-  fi
-
-  if [[ -z "${data}" ]]; then
-    echo "${USAGE}"
-    exit 1
-  fi
-
-  if [[ "${data}" == ${SAHIBIN_BASE_URL}/share?key=* ]]; then
-    IFS="=" read -ra parts <<<"${data}"
-    api_get "${parts[-1]}"
-  else
-    api_create "${key}" "${data}"
-  fi
-}
-
-main "${@}"
+if __name__ == '__main__':
+    sys.exit(main())
