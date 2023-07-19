@@ -33,11 +33,11 @@ class Paste(BaseModel):
     data: str
 
 
-def generate_key() -> str:
+def generate_key(size=6) -> str:
     sr = SystemRandom()
-    key = "".join(sr.choices(string.ascii_letters + string.digits, k=6))
+    key = "".join(sr.choices(string.ascii_letters + string.digits, k=size))
     if collection.find_one({"key": key}):
-        return generate_key()
+        return generate_key(size=size + 1)
     return key
 
 

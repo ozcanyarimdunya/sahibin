@@ -56,7 +56,7 @@ const endpoints = [
         in: 'body',
         required: false,
         description: 'The paste expire duration in days',
-        default: '1 for expire in one day',
+        default: '1 for expire in 1 day, 0 for never expire',
         type: 'integer',
       },
     ],
@@ -64,7 +64,7 @@ const endpoints = [
       {
         code: '201',
         description: 'Return a successful result when paste created',
-        example: '{ "key": "f09781ec-0e39-4c52-80fc-1fd9f0e9f935" }'
+        example: '{ "key": "abc123" }'
       },
       {
         code: '422',
