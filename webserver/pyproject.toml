@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sahibin"
-version = "1.0.8"
+version = "1.0.10"
 description = "Sahibin is an online platform that allows users to store and share plain text snippets or code snippets."
 authors = ["Özcan Yarımdünya <ozcanyd@gmail.com>"]
 readme = "README.md"

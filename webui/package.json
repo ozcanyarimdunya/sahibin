@@ -1,7 +1,7 @@
 {
   "name": "sahibin",
   "description": "Sahibin is an online platform that allows users to store and share plain text snippets or code snippets.",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "private": true,
   "scripts": {
     "dev": "vite",

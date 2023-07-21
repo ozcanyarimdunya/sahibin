@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar bg-sahibin-dark">
     <div class="container-lg">
-      <a class="navbar-brand sahibin-logo fw-bold px-0 py-1 rounded-1" href="/">sahibin</a>
+      <a class="navbar-brand sahibin-logo fw-bold p-0 rounded-1" href="/">sahibin</a>
       <div class="d-flex column-gap-2 align-items-center">
         <router-link v-show="!isHome"
                      class="btn btn-sm me-0 me-sm-auto px-3 fw-medium btn-outline-sahibin"
@@ -29,7 +29,7 @@
            id="offcanvasNavbarLight"
            aria-labelledby="offcanvasNavbarLightLabel">
         <div class="offcanvas-header bg-sahibin-dark py-2">
-          <a class="navbar-brand sahibin-logo fw-bold px-0 py-1 rounded-1" href="/">sahibin</a>
+          <a class="navbar-brand sahibin-logo fw-bold p-0 rounded-1" href="/">sahibin</a>
           <div role="button" data-bs-dismiss="offcanvas" aria-label="Close">
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="20"

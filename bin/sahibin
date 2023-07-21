@@ -14,7 +14,7 @@ from urllib.request import Request
 from urllib.request import urlopen
 
 __author__ = "@ozcanyarimdunya"
-__version__ = "1.0.8"
+__version__ = "1.0.10"
 SAHIBIN_URL = os.getenv("SAHIBIN_URL", "http://0.0.0.0:8000")
 
 
