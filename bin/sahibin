@@ -56,8 +56,8 @@ def check_version():
     if __version__ == version:
         return
 
-    print("A new release is available:", __version__, "->", version)
-    print("To update, visit:", SAHIBIN_URL + "/cli", "and follow Installation Guide.")
+    print(f"A new release is available: {__version__} -> {version}")
+    print(f"To update, visit: {SAHIBIN_URL}/cli and follow Installation Guide.")
 
 
 def create_paste(content, expire=1):
