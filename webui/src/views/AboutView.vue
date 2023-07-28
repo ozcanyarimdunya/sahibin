@@ -79,6 +79,34 @@
             </div>
           </div>
           <hr class="col-5 mb-5">
+
+          <div class="row g-1">
+            <div class="col-12">
+              <h3>Frequently Asked Questions</h3>
+              <p>All things about Sahibin.</p>
+              <div class="accordion">
+                <div class="accordion-item rounded-0" v-for="(item, index) in faq" :key="index">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed rounded-0"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            :data-bs-target="'#faq' + index"
+                            aria-expanded="false">
+                      {{ item.question }}
+                    </button>
+                  </h2>
+                  <div class="accordion-collapse collapse" :id="'faq'+index">
+                    <div class="accordion-body">
+                      <p class="fw-light fst-italic">
+                        {{ item.answer }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="col-5 mb-5">
         </main>
       </div>
     </div>
@@ -86,6 +114,32 @@
 </template>
 
 <script setup>
+const faq = [
+  {
+    "question": "What is Sahibin?",
+    "answer": "Sahibin is an innovative online platform designed to simplify the process of storing and sharing plain text or code snippets. It allows users to securely store their snippets and access them from anywhere with an internet connection"
+  },
+  {
+    "question": "Can I share snippets with others?",
+    "answer": "Yes, you can share snippets through unique links with read-only option."
+  },
+  {
+    "question": "Can I integrate Sahibin with other tools and services?",
+    "answer": "Yes, Sahibin provides APIs and documentation for integration with other tools and services",
+  },
+  {
+    "question": "Can I see my previous snippets on Sahibin?",
+    "answer": "Yes, Sahibin creates a unique session id (saved in cookie) for you on your web browser, and on the History page you can see all your previous snippets.",
+  },
+  {
+    "question": "Does Sahibin support collaborative editing?",
+    "answer": "Nope :(",
+  },
+  {
+    "question": "How do I get support?",
+    "answer": "Contact @ozcanyarimdunya."
+  }
+]
 </script>
 
 <style scoped>

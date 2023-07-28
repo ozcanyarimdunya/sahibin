@@ -8,7 +8,7 @@ services:
 
   webserver:
     build:
-      context: .
+      context: ../
       dockerfile: ./docker/webserver.Dockerfile
     depends_on:
       - database
@@ -17,7 +17,7 @@ services:
 
   webui:
     build:
-      context: .
+      context: ../
       dockerfile: ./docker/webui.Dockerfile
     depends_on:
       - webserver

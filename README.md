@@ -44,7 +44,7 @@ make run-docker
 
 Check this link [http://localhost:8000/](http://localhost:8000/).
 
-## CLI 
+## CLI
 
 **Installation**
 
@@ -69,10 +69,11 @@ http://0.0.0.0:8000/share/xyz321
 
 ## Screenshots
 
-![img1.png](./assets/img1.png)
-
-![img2.png](./assets/img2.png)
-
-![img3.png](./assets/img3.png)
+|                                  |                                  |
+|----------------------------------|----------------------------------|
+| **Home Page**                    | **Share Page**                   |
+| ![img.png](./assets/img.png)     | ![img_1.png](./assets/img_1.png) |
+| **History Page**                 | **Sahibin CLI**                  |
+| ![img_2.png](./assets/img_3.png) | ![img_3.png](./assets/img_2.png) |
 
 > @ozcanyarimdunya

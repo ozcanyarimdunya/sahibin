@@ -29,17 +29,17 @@
           <hr class="col-5 mb-5">
 
           <h3>Installation Guide</h3>
-          <p class="lead">Follow these steps to install Sahibin CLI on macOS and Linux:</p>
-          <div class="container border">
+          <p class="lead">Follow these steps to install & upgrade Sahibin CLI on macOS and Linux:</p>
+          <div class="container-fluid border">
             <div class="row">
               <div class="col py-3">
                 <ol>
-                  <li>Open the Terminal application on your Mac and Linux machine.</li>
+                  <li>Open the Terminal application on your Mac or Linux machine.</li>
+                  <li>Ensure that python 3.7+ is installed.
+                    <simple-code content="python3 --version" output="Python 3.7+"/>
+                  </li>
                   <li>
-                    Check if you have
-                    <strong>
-                      <a href="https://www.python.org/downloads/" target="_blank">python3</a>
-                    </strong> installed and once it is installed, run the following command to install Sahibin CLI:
+                    Once python 3.7+ is installed, run the following commands to install Sahibin CLI:
                     <simple-code :content="`sudo curl -k ${url}/sahibin -o /usr/local/bin/sahibin`"/>
                     <simple-code content="sudo chmod +x /usr/local/bin/sahibin"/>
                   </li>
@@ -49,11 +49,6 @@
                     <p>You should see the version number of Sahibin CLI if it was installed successfully.</p>
                   </li>
                 </ol>
-                <div class="alert alert-danger mt-4 mx-1" role="alert">
-                  Sahibin CLI uses <b>SAHIBIN_URL</b> environment variable as base url.
-                  You can change the base url by running following command:
-                  <simple-code :content='`export SAHIBIN_URL="${url}"`'/>
-                </div>
               </div>
             </div>
           </div>
@@ -73,12 +68,65 @@
             <div class="card-body">
               <h5 class="card-title">Create a new paste by providing content via stdin.</h5>
               <p class="card-text">
-                This command get content via stdin then creates a new paste and print paste's shareable URL to the
+                This command read file content then creates a new paste and print paste's shareable URL to the
                 console.
               </p>
-              <simple-code content="echo 'content from stdin' | sahibin " :output="`${url}/share/a-unique-key`"/>
+              <simple-code content="cat /path/to/file.txt | sahibin " :output="`${url}/share/a-unique-key`"/>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Create a new paste by providing expire days.</h5>
+              <p class="card-text">
+                This command creates a new paste with 10 days as expiration days and print paste's shareable URL to the
+                console.
+              </p>
+              <simple-code content="echo -e 10 'Expire in 10 days' | sahibin " :output="`${url}/share/a-unique-key`"/>
             </div>
           </div>
+          <div class="mb-5"></div>
+
+          <h3>Configuration Guide</h3>
+          <p class="lead">Sahibin CLI uses below environment variables:</p>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th scope="col">Environment Variable</th>
+                <th scope="col">Description</th>
+                <th scope="col">Default Value</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <th scope="row">SAHIBIN_URL</th>
+                <td>Base sahibin url</td>
+                <td class="text-body-secondary"><code>http://0.0.0.0:8000</code></td>
+              </tr>
+              <tr>
+                <th scope="row">SAHIBIN_EXPIRE_DAYS</th>
+                <td>Paste expiration in days</td>
+                <td class="text-body-secondary"><code>1</code></td>
+              </tr>
+              <tr>
+                <th scope="row">SAHIBIN_CHECK_UPDATES</th>
+                <td>Check update everytime Sahibin CLI run</td>
+                <td class="text-body-secondary"><code>True</code></td>
+              </tr>
+              <tr>
+                <th scope="row">SAHIBIN_SESSIONID</th>
+                <td>
+                  Unique identifier used to track and manage a user's current interactions and pastes on the platform.
+                  <br>
+                  <span>Your unique session id:</span>
+                  <simple-code :content="sessionid"/>
+                </td>
+                <td class="text-body-secondary">
+                  <code>null</code>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
         </main>
       </div>
     </div>
@@ -88,8 +136,12 @@
 <script setup>
 import packageJson from '@/../package.json';
 import SimpleCode from "@/components/SimpleCode.vue";
+import {useCookie} from "@/utils";
 
+const {get} = useCookie()
 const url = window.location.origin;
+
+const sessionid = get('user-session-id');
 </script>
 
 <style scoped>

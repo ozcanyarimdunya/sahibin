@@ -31,6 +31,11 @@ const router = createRouter({
             component: () => import('@/views/ShareView.vue')
         },
         {
+            path: '/history',
+            name: 'history',
+            component: () => import('@/views/HistoryView.vue')
+        },
+        {
             path: '/:pathMatch(.*)',
             name: 'error',
             component: () => import('@/views/ErrorView.vue')

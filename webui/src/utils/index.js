@@ -30,3 +30,38 @@ export const useClipboard = () => {
     }
     return {copy, copied}
 }
+
+
+export const useCookie = () => {
+    const get = (cookieName, defaultValue = null) => {
+        const cookies = document.cookie.split('; ');
+        for (const cookie of cookies) {
+            const [name, value] = cookie.split("=")
+            if (name === cookieName) {
+                return decodeURIComponent(value);
+            }
+        }
+        return defaultValue ? decodeURIComponent(defaultValue) : null;
+    }
+    const set = (cookieName, cookieValue, daysToExpire) => {
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + daysToExpire)
+        document.cookie = `${encodeURIComponent(cookieName)}=${encodeURIComponent(cookieValue)};expires=${expirationDate.toUTCString()};path=/`;
+    }
+
+    const remove = (cookieName) => {
+        document.cookie = `${encodeURIComponent(cookieName)}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+    }
+
+    return {get, set, remove}
+}
+
+export const generateRandomString = (length = 18) => {
+    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let randomString = "";
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        randomString += charset.charAt(randomIndex);
+    }
+    return randomString;
+}

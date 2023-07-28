@@ -8,47 +8,92 @@ import json
 import os
 import ssl
 import sys
-from urllib.error import HTTPError
-from urllib.error import URLError
 from urllib.request import Request
 from urllib.request import urlopen
 
 __author__ = "@ozcanyarimdunya"
-__version__ = "1.0.10"
+__version__ = "2.0.0"
 SAHIBIN_URL = os.getenv("SAHIBIN_URL", "http://0.0.0.0:8000")
+SAHIBIN_EXPIRE_DAYS = os.getenv("SAHIBIN_EXPIRE_DAYS", "1")
+SAHIBIN_CHECK_UPDATES = os.getenv("SAHIBIN_CHECK_UPDATES", "True")
+SAHIBIN_SESSIONID = os.getenv("SAHIBIN_SESSIONID", None)
+
+try:
+    assert sys.version_info.major >= 3
+    assert sys.version_info.minor >= 7
+except AssertionError:
+    print("Python 3.7+ is required!")
+    exit(1)
 
 
-def api(content, expire=1):
-    data = {"data": content, "expire": expire}
-    payload = json.dumps(data).encode("utf-8")
-    headers = {
-        "Content-Type": "application/json",
-        "Content-Length": len(payload)
-    }
-    request = Request(
-        url=SAHIBIN_URL + "/api",
-        data=payload,
-        headers=headers,
-        method="POST",
-    )
+def make_request(url, method, data=None, headers=None):
+    request = Request(url=url, method=method)
+    if data:
+        request.data = data
+    request.headers = headers or dict()
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
     try:
         with urlopen(request, context=context) as response:
             body = response.read().decode("utf-8")
-            key = json.loads(body).get("key")
-            return 0, SAHIBIN_URL + "/share/" + key
-    except HTTPError as ex:
-        return 1, ex
-    except URLError as ex:
-        return 1, ex
+            return True, body
     except Exception as ex:
-        return 1, ex
+        return False, str(ex)
+
+
+def check_version():
+    if SAHIBIN_CHECK_UPDATES != "True":
+        return
+    success, version = make_request(
+        url=SAHIBIN_URL + "/version",
+        method="GET",
+        headers={"Content-Type": "application/json"}
+    )
+    if not success:
+        return
+
+    if __version__ == version:
+        return
+
+    print("A new release is available:", __version__, "->", version)
+    print("To update, visit:", SAHIBIN_URL + "/cli", "and follow Installation Guide.")
+
+
+def create_paste(content, expire=1):
+    data = {"data": content, "expire": expire}
+    payload = json.dumps(data).encode("utf-8")
+    headers = {
+        "Content-Type": "application/json",
+        "Content-Length": len(payload)
+    }
+    if SAHIBIN_SESSIONID:
+        headers.update({"User-Session-Id": SAHIBIN_SESSIONID})
+    success, result = make_request(
+        url=SAHIBIN_URL + "/api",
+        data=payload,
+        headers=headers,
+        method="POST",
+    )
+    if not success:
+        return 1, result
+
+    key = json.loads(result).get("key")
+    return 0, SAHIBIN_URL + "/share/" + key
+
+
+def get_default_expire_days():
+    if SAHIBIN_EXPIRE_DAYS.isdigit():
+        return int(SAHIBIN_EXPIRE_DAYS)
+    print(f"SAHIBIN_EXPIRE_DAYS should be digit, {SAHIBIN_EXPIRE_DAYS} is not a valid digit.")
+    return 1
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Sahibin, an online text sharer.", epilog=__author__)
+    parser = argparse.ArgumentParser(
+        description="Sahibin, an online text sharer.",
+        epilog="@ozcanyarimdunya",
+    )
     parser.add_argument(
         "-v",
         "--version",
@@ -59,9 +104,9 @@ def main():
         "-e",
         dest="expire",
         metavar="<value>",
-        help="The paste expire duration in days (default: %(default)s for 1 day, 0 for never expire).",
+        help="The paste expire duration in days (default: %(default)s day, 0 for never expire).",
         type=int,
-        default=1,
+        default=get_default_expire_days(),
     )
     if sys.stdin.isatty():
         parser.add_argument("content", help="The paste content", type=str)
@@ -69,7 +114,9 @@ def main():
     else:
         args = vars(parser.parse_args())
         args.update(content=sys.stdin.read().strip())
-    code, result = api(**args)
+
+    check_version()
+    code, result = create_paste(**args)
     print(result)
     return code
 

@@ -1,5 +1,6 @@
 import os
 import string
+import time
 from datetime import datetime
 from datetime import timedelta
 from random import SystemRandom
@@ -7,9 +8,12 @@ from random import SystemRandom
 import pymongo
 from fastapi import FastAPI
 from fastapi import HTTPException
+from fastapi import Request
 from fastapi import status
 from pydantic import BaseModel
 
+os.environ.setdefault("TZ", "Europe/Istanbul")
+time.tzset()
 debug = os.getenv("MODE") == "DEV"
 app = FastAPI(debug=debug)
 client = pymongo.MongoClient(os.getenv("DATABASE_URL", "mongodb://localhost:27017/"))
@@ -42,14 +46,45 @@ def generate_key(size=6) -> str:
 
 
 @app.post("/api", summary="Create new paste", status_code=status.HTTP_201_CREATED)
-def api_create(paste: Paste) -> dict:
+def api_create(request: Request, paste: Paste) -> dict:
     key = generate_key()
     document: dict = paste.dict()
-    document.update(key=key, timestamp=datetime.now())
+    document.update(
+        key=key,
+        timestamp=datetime.now(),
+        userSessionId=request.headers.get("user-session-id"),
+    )
     if paste.expire > 0:
         document.update(expire_at=datetime.now() + timedelta(days=paste.expire))
     collection.insert_one(document)
     return {"key": key}
+
+
+@app.get("/api/history", summary="Retrieve user paste", status_code=status.HTTP_200_OK)
+def api_history(request: Request):
+    pastes = (
+        collection.find(
+            {
+                "userSessionId": {
+                    "$eq": request.headers.get("user-session-id"),
+                    "$exists": True,
+                    "$ne": None,
+                },
+            },
+            {
+                "_id": False,
+                "key": True,
+                "timestamp": True,
+                "expire_at": True,
+                "data": {
+                    "$substr": ["$data", 0, 250]
+                }
+            }
+        )
+        .sort("timestamp", direction=pymongo.DESCENDING)
+        .limit(50)
+    )
+    return list(pastes)
 
 
 @app.get("/api/{key}", summary="Retrieve a paste", status_code=status.HTTP_200_OK)

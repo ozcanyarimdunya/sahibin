@@ -15,7 +15,7 @@
                 :loading="loading"
                 :class="{'disabled': !editor || loading}"
                 @click="onSave">
-              Save Snippet
+              Save Paste
             </loading-button>
           </div>
         </div>
@@ -26,6 +26,9 @@
             theme="chrome"
             v-model:value="editor"
             :print-margin="false"
+            :options="{
+                highlightActiveLine: false,
+            }"
         />
       </div>
     </div>

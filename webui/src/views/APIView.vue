@@ -34,8 +34,6 @@
 
 <script setup>
 import ApiItem from "@/components/ApiItem.vue";
-import {onMounted} from "vue";
-import {setupBootstrap} from "@/plugins";
 
 const endpoints = [
   {
@@ -59,6 +57,14 @@ const endpoints = [
         default: '1 for expire in 1 day, 0 for never expire',
         type: 'integer',
       },
+      {
+        name: 'user-session-id',
+        in: 'header',
+        required: false,
+        description: 'The unique identifier to track a user\'s pastes on the platform',
+        default: null,
+        type: 'string',
+      },
     ],
     responses: [
       {
@@ -68,7 +74,7 @@ const endpoints = [
       },
       {
         code: '422',
-        description: 'Return validation error when paste payload did\'nt meet the requirement',
+        description: 'Return validation error when paste payload did not meet the requirement',
         example: '{ "detail": [ { "loc": [ "string", 0 ], "msg": "string", "type": "string" } ] }'
       },
     ]
@@ -83,6 +89,14 @@ const endpoints = [
         in: 'path',
         required: true,
         description: 'The paste key to retrieve',
+        default: null,
+        type: 'string',
+      },
+      {
+        name: 'user-session-id',
+        in: 'header',
+        required: false,
+        description: 'The unique identifier to track a user\'s pastes on the platform',
         default: null,
         type: 'string',
       }
@@ -100,8 +114,29 @@ const endpoints = [
       },
     ]
   },
+  {
+    path: '/api/history',
+    method: 'GET',
+    summary: 'Get user\'s paste history',
+    parameters: [
+      {
+        name: 'user-session-id',
+        in: 'header',
+        required: false,
+        description: 'The unique identifier to track a user\'s pastes on the platform',
+        default: null,
+        type: 'string',
+      }
+    ],
+    responses: [
+      {
+        code: '200',
+        description: 'Return a successful result',
+        example: '{ "key": "abc123", "data": "Paste content (trimmed)", "expire_at": "YYYY-MM-DDTHH:MM:SS.ssssss", "timestamp": "YYYY-MM-DDTHH:MM:SS.ssssss" }'
+      }
+    ]
+  },
 ]
 
-onMounted(() => setupBootstrap())
 </script>
 

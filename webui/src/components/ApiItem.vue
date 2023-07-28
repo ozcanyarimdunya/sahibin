@@ -5,8 +5,7 @@
               type="button"
               data-bs-toggle="collapse"
               :data-bs-target="'#' + itemId"
-              aria-expanded="false"
-              aria-controls="collapseThree">
+              aria-expanded="false">
         <span class="d-flex align-items-center column-gap-2">
           <span class="py-1 px-3 rounded-1 text-white"
                 :class="getMethodClass(data.method)">

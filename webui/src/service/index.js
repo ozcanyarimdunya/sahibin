@@ -5,6 +5,7 @@ axios.defaults.baseURL = import.meta.env.DEV ? "http://localhost:8000/api" : "/a
 class PasteService {
     create = (payload) => axios.post("", payload).then(({data}) => data)
     get = (key) => axios.get(`/${key}`).then(({data}) => data)
+    history = () => axios.get(`/history`).then(({data}) => data)
 }
 
 const pasteService = new PasteService();
