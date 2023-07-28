@@ -26,7 +26,7 @@ except AssertionError:
     exit(1)
 
 
-def make_request(url, method, data=None, headers=None):
+def make_request(url, method, data=None, headers=None, timeout=5):
     request = Request(url=url, method=method)
     if data:
         request.data = data
@@ -35,7 +35,7 @@ def make_request(url, method, data=None, headers=None):
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
     try:
-        with urlopen(request, context=context) as response:
+        with urlopen(request, context=context, timeout=timeout) as response:
             body = response.read().decode("utf-8")
             return True, body
     except Exception as ex:
