@@ -1,3 +1,14 @@
+OS := $(shell uname)
+
+ifeq ($(OS), Darwin)
+	ext_sed := -i ""
+else
+	ext_sed := -i
+endif
+
+help:
+	@echo "Sahibin, an online text sharer."
+
 install-webui:
 	@cd webui && yarn install
 
@@ -16,7 +27,7 @@ build-docker:
 run-docker:
 	@docker compose --file docker/docker-compose.yml up -d --build
 
-upgrade:
+update:
 ifndef version
 	$(error The variable 'version' must be set before running this target)
 endif

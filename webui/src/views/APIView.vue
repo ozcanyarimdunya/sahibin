@@ -58,6 +58,14 @@ const endpoints = [
         type: 'integer',
       },
       {
+        name: 'title',
+        in: 'body',
+        required: false,
+        description: 'The paste title',
+        default: null,
+        type: 'string',
+      },
+      {
         name: 'user-session-id',
         in: 'header',
         required: false,
@@ -89,6 +97,14 @@ const endpoints = [
         in: 'path',
         required: true,
         description: 'The paste key to retrieve',
+        default: null,
+        type: 'string',
+      },
+      {
+        name: 'title',
+        in: 'body',
+        required: false,
+        description: 'The paste title',
         default: null,
         type: 'string',
       },
@@ -126,14 +142,130 @@ const endpoints = [
         description: 'The unique identifier to track a user\'s pastes on the platform',
         default: null,
         type: 'string',
+      },
+      {
+        name: 'q',
+        in: 'query',
+        required: false,
+        description: 'Search keyword (search in content and title)',
+        default: null,
+        type: 'string',
       }
     ],
     responses: [
       {
         code: '200',
         description: 'Return a successful result',
-        example: '{ "key": "abc123", "data": "Paste content (trimmed)", "expire_at": "YYYY-MM-DDTHH:MM:SS.ssssss", "timestamp": "YYYY-MM-DDTHH:MM:SS.ssssss" }'
+        example: '{ "key": "abc123", "title": "Paste title (may be null)",  "data": "Paste content (trimmed)", "expire_at": "YYYY-MM-DDTHH:MM:SS.ssssss", "timestamp": "YYYY-MM-DDTHH:MM:SS.ssssss" }'
       }
+    ]
+  },
+  {
+    path: '/api/export',
+    method: 'GET',
+    summary: 'Get user\'s paste history as zip',
+    parameters: [
+      {
+        name: 'user-session-id',
+        in: 'header',
+        required: true,
+        description: 'The unique identifier to track a user\'s pastes on the platform',
+        default: null,
+        type: 'string',
+      }
+    ],
+    responses: [
+      {
+        code: '200',
+        description: 'Return a successful result as zip',
+        example: 'blob'
+      }
+    ]
+  },
+  {
+    path: '/api/{key}',
+    method: 'DELETE',
+    summary: 'Delete paste by key',
+    parameters: [
+      {
+        name: 'user-session-id',
+        in: 'header',
+        required: true,
+        description: 'The unique identifier to track a user\'s pastes on the platform',
+        default: null,
+        type: 'string',
+      },
+      {
+        name: 'key',
+        in: 'path',
+        required: true,
+        description: 'The paste key to delete',
+        default: null,
+        type: 'string',
+      },
+    ],
+    responses: [
+      {
+        code: '204',
+        description: 'Return no content if paste with key successfully deleted',
+        example: ' '
+      },
+      {
+        code: '404',
+        description: 'Return an unsuccessful result when paste with key does not exists or you\'re not the author of the paste',
+        example: '{ "detail": "Paste not found or you\'re not authorized to delete" }'
+      },
+    ]
+  },
+  {
+    path: '/api/{key}',
+    method: 'PATCH',
+    summary: 'Delete paste by key',
+    parameters: [
+      {
+        name: 'key',
+        in: 'path',
+        required: true,
+        description: 'The paste key to edit',
+        default: null,
+        type: 'string',
+      },
+      {
+        name: 'data',
+        in: 'body',
+        required: true,
+        description: 'The paste content',
+        default: null,
+        type: 'string',
+      },
+      {
+        name: 'title',
+        in: 'body',
+        required: false,
+        description: 'The paste title',
+        default: null,
+        type: 'string',
+      },
+      {
+        name: 'user-session-id',
+        in: 'header',
+        required: true,
+        description: 'The unique identifier to track a user\'s pastes on the platform',
+        default: null,
+        type: 'string',
+      },
+    ],
+    responses: [
+      {
+        code: '200',
+        description: 'Return a successful result when paste edited',
+        example: '{ "key": "abc123" }'
+      },
+      {
+        code: '404',
+        description: 'Return an unsuccessful result when paste with key does not exists or you\'re not the author of the paste',
+        example: '{ "detail": "Paste not found or you\'re not authorized to edit" }'
+      },
     ]
   },
 ]

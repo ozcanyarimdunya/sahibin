@@ -39,6 +39,7 @@ $ make run-webui
 ### Docker
 
 ```shell
+make update version=x.x.x
 make run-docker
 ```
 
@@ -64,6 +65,20 @@ http://0.0.0.0:8000/share/abc123
 
 ```shell
 $ cat /tmp/test.txt | sahibin
+http://0.0.0.0:8000/share/xyz321
+```
+
+**Create a new paste by providing expire days.**
+
+```shell
+$ sahibin -e 10 'Expire in 10 days'
+http://0.0.0.0:8000/share/xyz321
+```
+
+**Create a new paste by providing title.**
+
+```shell
+$ sahibin -t 'simple title'
 http://0.0.0.0:8000/share/xyz321
 ```
 

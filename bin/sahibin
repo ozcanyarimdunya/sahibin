@@ -12,7 +12,7 @@ from urllib.request import Request
 from urllib.request import urlopen
 
 __author__ = "@ozcanyarimdunya"
-__version__ = "2.0.0"
+__version__ = "2.2.2"
 SAHIBIN_URL = os.getenv("SAHIBIN_URL", "http://0.0.0.0:8000")
 SAHIBIN_EXPIRE_DAYS = os.getenv("SAHIBIN_EXPIRE_DAYS", "1")
 SAHIBIN_CHECK_UPDATES = os.getenv("SAHIBIN_CHECK_UPDATES", "True")
@@ -60,8 +60,8 @@ def check_version():
     print(f"To update, visit: {SAHIBIN_URL}/cli and follow Installation Guide.")
 
 
-def create_paste(content, expire=1):
-    data = {"data": content, "expire": expire}
+def create_paste(content, expire=1, title=None):
+    data = {"data": content, "expire": expire, "title": title}
     payload = json.dumps(data).encode("utf-8")
     headers = {
         "Content-Type": "application/json",
@@ -103,10 +103,18 @@ def main():
     parser.add_argument(
         "-e",
         dest="expire",
-        metavar="<value>",
+        metavar="<expire>",
         help="The paste expire duration in days (default: %(default)s day, 0 for never expire).",
         type=int,
         default=get_default_expire_days(),
+    )
+    parser.add_argument(
+        "-t",
+        dest="title",
+        metavar="<title>",
+        help="The paste title (default: %(default)s).",
+        type=str,
+        default="",
     )
     if sys.stdin.isatty():
         parser.add_argument("content", help="The paste content", type=str)

@@ -8,38 +8,67 @@
             Your Past Text and Code Snippets!
           </p>
         </header>
+        <div class="d-flex align-items-center justify-content-end mb-4 gap-1 col-12 col-md-6 mx-auto">
+          <div class="position-relative w-100">
+            <input class="form-control form-control-sm"
+                   type="text"
+                   placeholder="Type to search..."
+                   v-model="searchKey"
+                   @change="onSearch">
+            <button class="position-absolute btn btn-sm btn-outline-dark border rounded-start-0 btn-search"
+                    @click="onSearch">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+          <button class="btn btn-sm btn-outline-dark border"
+                  data-bs-toggle="tooltip"
+                  data-bs-title="Export All Pastes"
+                  @click="onExport">
+            <i class="bi bi-cloud-download" v-if="!exportLoading"></i>
+            <span class="spinner-border spinner-border-sm text-secondary" v-else></span>
+          </button>
+        </div>
 
         <main v-if="loading">
           <p class="text-center text-secondary">Loading...</p>
         </main>
         <main v-else>
-          <div class="border rounded-1 mb-3" v-for="(item, index) in items" :key="index">
-            <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between p-2">
+          <div class="border rounded-1 mb-4" v-for="(item, index) in items" :key="index">
+            <div
+                class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between p-2 bg-gradient bg-body-tertiary">
               <router-link :to="{name: 'share', params: {key: item.key}}"
-                           class="card-link text-decoration-none opacity-75 item-link">
-
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path
-                      d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
-                  <path
-                      d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
-                </svg>
-                {{ url }}/share/{{ item.key }}
+                           class="card-link text-decoration-none d-inline-flex align-items-center gap-1 small">
+                {{ safeString(item.title, `${url}/share/${item.key}`) }}
               </router-link>
-              <small class="opacity-50 text-nowrap item-date">
-                {{ formattedDate(item.timestamp) }}</small>
+              <small class="text-nowrap d-flex align-items-center justify-content-between gap-2">
+                <small class="d-inline-flex align-items-center gap-1 border-end pe-2">
+                  <i class="bi bi-clock"></i>
+                  <span>{{ formatDatetime(item.timestamp) }}</span>
+                </small>
+                <small class="d-flex align-items-center gap-1 border-end pe-2">
+                  <i class="bi bi-eye"></i>
+                  <span>{{ item.views ? item.views : 1 }}</span>
+                </small>
+                <span v-if="!deleteItems[item.key]" role="button" class="text-danger" @click="confirm4Delete(item)">
+                  <i class="bi bi-trash fs-6"></i>
+                </span>
+                <span v-else role="button" class="text-danger" @click="deleteItem(item)">
+                  <i class="bi bi-check-lg fs-6"></i>
+                </span>
+              </small>
             </div>
             <v-ace-editor
-                class="rounded-1 border-top rounded-top-0 opacity-75"
-                :max-lines="item.data.split('\n').length"
-                theme="chrome"
-                v-model:value="item.data"
-                :print-margin="false"
                 readonly
+                theme="chrome"
+                class="rounded-1 border-top rounded-top-0 opacity-75"
+                v-model:value="item.data"
+                :max-lines="item.data.split('\n').length"
+                :print-margin="false"
                 :options="{ highlightActiveLine: false }"
             />
           </div>
-          <div class="text-secondary text-start mt-2 small">Showing up to 50 snippets.</div>
+          <div class="text-secondary text-center mb-2" v-if="!items.length">No paste found.</div>
+          <div class="text-secondary text-start mt-2 small" v-else>Showing up to 50 snippets.</div>
         </main>
       </div>
     </div>
@@ -49,31 +78,63 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import pasteService from "@/service";
+import {formatDatetime, safeString} from "@/utils";
 
 const loading = ref(false);
 let items = ref([])
+const url = window.location.origin
+const deleteItems = ref({})
+const searchKey = ref('')
+const exportLoading = ref(false)
 
-const loadHistoryItems = () => {
+const loadHistoryItems = (q = '') => {
   loading.value = true;
   pasteService
-      .history()
-      .then(data => items.value = data)
+      .history(q)
+      .then(({data}) => {
+        items.value = data;
+        const deleteObj = {};
+        data.forEach(it => deleteObj[it.key] = false)
+        deleteItems.value = deleteObj
+      })
       .finally(() => loading.value = false)
 }
-onMounted(() => loadHistoryItems())
-const url = window.location.origin
 
-const formattedDate = (inputDateTime) => {
-  return new Date(inputDateTime).toISOString().slice(0, 19).replace("T", " ");
+const deleteItem = (item) => {
+  pasteService
+      .delete(item.key)
+      .then(() => items.value = items.value.filter(it => it.key !== item.key))
 }
+
+const confirm4Delete = (item) => {
+  deleteItems.value[item.key] = true
+  setTimeout(() => deleteItems.value[item.key] = false, 1500)
+}
+
+const onSearch = () => {
+  loadHistoryItems(searchKey.value)
+}
+const onExport = () => {
+  exportLoading.value = true
+  pasteService
+      .export()
+      .then(({data}) => {
+        const blob = new Blob([data], {type: 'application/zip'});
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob)
+        link.download = `export-${new Date().getTime()}.zip`
+        link.click()
+      })
+      .catch(err => console.warn(err))
+      .finally(() => exportLoading.value = false)
+}
+
+onMounted(() => loadHistoryItems())
 </script>
 
 <style scoped>
-.item-link {
-  font-size: .75rem;
-}
-
-.item-date {
-  font-size: .75rem;
+.btn-search {
+  right: 0;
+  top: 0
 }
 </style>

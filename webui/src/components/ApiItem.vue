@@ -7,7 +7,8 @@
               :data-bs-target="'#' + itemId"
               aria-expanded="false">
         <span class="d-flex align-items-center column-gap-2">
-          <span class="py-1 px-3 rounded-1 text-white"
+          <span class="py-1 px-3 rounded-1 text-white text-center"
+                style="width: 6rem"
                 :class="getMethodClass(data.method)">
             {{ data.method }}
           </span>

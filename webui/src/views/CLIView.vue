@@ -45,7 +45,7 @@
                   </li>
                   <li>
                     Verify the installation by running the following command:
-                    <simple-code content="sahibin --version" :output="packageJson.version"/>
+                    <simple-code content="sahibin --version" output="x.y.z"/>
                     <p>You should see the version number of Sahibin CLI if it was installed successfully.</p>
                   </li>
                 </ol>
@@ -79,7 +79,15 @@
                 This command creates a new paste with 10 days as expiration days and print paste's shareable URL to the
                 console.
               </p>
-              <simple-code content="echo -e 10 'Expire in 10 days' | sahibin " :output="`${url}/share/a-unique-key`"/>
+              <simple-code content="sahibin -e 10 'Expire in 10 days'" :output="`${url}/share/a-unique-key`"/>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Create a new paste by providing title.</h5>
+              <p class="card-text">
+                This command creates a new paste with title and print paste's shareable URL to the console.
+              </p>
+              <simple-code content="echo 'Paste content' | sahibin -t 'simple title'"
+                           :output="`${url}/share/a-unique-key`"/>
             </div>
           </div>
           <div class="mb-5"></div>
@@ -134,7 +142,6 @@
 </template>
 
 <script setup>
-import packageJson from '@/../package.json';
 import SimpleCode from "@/components/SimpleCode.vue";
 import {useCookie} from "@/utils";
 

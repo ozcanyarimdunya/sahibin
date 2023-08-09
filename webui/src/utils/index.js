@@ -65,3 +65,11 @@ export const generateRandomString = (length = 18) => {
     }
     return randomString;
 }
+
+export const formatDatetime = (input) => input ? new Date(input).toISOString().slice(0, 19).replace("T", " ") : '';
+
+export const safeString = (value, defaultValue = null) => {
+    if (!value) return defaultValue
+    if (!value.trim()) return defaultValue;
+    return value.trim()
+}

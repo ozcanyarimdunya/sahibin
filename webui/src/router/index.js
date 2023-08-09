@@ -31,6 +31,11 @@ const router = createRouter({
             component: () => import('@/views/ShareView.vue')
         },
         {
+            path: '/edit/:key',
+            name: 'edit',
+            component: () => import('@/views/EditView.vue')
+        },
+        {
             path: '/history',
             name: 'history',
             component: () => import('@/views/HistoryView.vue')

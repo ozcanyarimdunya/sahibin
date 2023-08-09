@@ -2,7 +2,7 @@
   <div class="container-lg">
     <div class="row">
       <div class="col-12">
-        <div class="py-3 d-flex gap-3">
+        <div class="py-3 d-flex align-items-center gap-3">
           <div class="w-75 position-relative">
             <input v-model="title"
                    class="form-control form-control-sm input-title"
@@ -21,7 +21,7 @@
               <option value="-1">Never expire</option>
             </select>
             <loading-button
-                class="btn btn-sm btn-primary rounded-1 px-3 text-nowrap"
+                class="btn btn-sm btn-outline-primary rounded-1 px-3 text-nowrap"
                 :loading="loading"
                 :class="{'disabled': !editor || loading}"
                 @click="onSave">
@@ -46,25 +46,43 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
-import {useRouter} from "vue-router";
+import {onMounted, ref} from "vue";
+import {useRoute, useRouter} from "vue-router";
 import LoadingButton from "@/components/LoadingButton.vue";
 import pasteService from "@/service";
+import {safeString} from "@/utils";
 
+const route = useRoute()
 const router = useRouter()
 const loading = ref(false);
 const editor = ref('')
+const timestamp = ref('')
 const expire = ref(1)
 const title = ref('')
+
+const loadPaste = () => {
+  editor.value = "loading ..."
+  pasteService
+      .get(route.params.key)
+      .then(({data}) => {
+        editor.value = data.data;
+        expire.value = data.expire <= 0 ? -1 : data.expire;
+        title.value = safeString(data.title, '')
+        timestamp.value = data.timestamp
+      })
+      .catch((err) => editor.value = `We're sorry, but the you're not authorized to edit the paste content.\nError: ${err}`)
+}
 
 const onSave = () => {
   loading.value = true
   pasteService
-      .create({data: editor.value, expire: expire.value, title: title.value.substring(0, 50)})
+      .edit(route.params.key, {data: editor.value, expire: expire.value, title: title.value.substring(0, 50)})
       .then(({data}) => router.push({name: 'share', params: {key: data.key}}))
       .catch(err => console.warn(err))
       .finally(() => loading.value = false)
 }
+
+onMounted(() => loadPaste())
 </script>
 
 <style scoped>
